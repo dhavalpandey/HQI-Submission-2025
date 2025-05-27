@@ -30,6 +30,6 @@ The video uses engaging visuals, including:
 
 1. Install **Manim**: Follow the [Manim installation guide](https://docs.manim.community/en/stable/installation.html).
 2. Run the final script:
-    ```bash
-    manim -pql video.py QuantumEncryptionVideoEnhanced
+    ```manim -pqh --format=mp4 --fps 60 -r 1920,1080 video.py QuantumEncryptionVideoEnhanced
+
     ```
