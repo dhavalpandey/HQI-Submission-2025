@@ -135,28 +135,36 @@ class QuantumEncryptionVideoEnhanced(Scene):
         flash1_text = Text("Try 2 × 7 = 14... ✕", font_size=30, color=ERROR_COLOR) 
         flash1_panel = create_text_panel(flash1_text.move_to(LEFT*3.5 + DOWN*0.5), padding=0.15, opacity=0.75)
         self.play(FadeIn(flash1_panel, run_time=0.2))
-        self.wait(0.6) # Reduced hold
+        self.wait(1.0) # Increased hold from 0.6s
         self.play(FadeOut(flash1_panel, run_time=0.2))
-        time_s3 += (0.2 + 0.6 + 0.2) # 1.0s for this flash -> time_s3 = 4.5s
+        time_s3 += (0.2 + 1.0 + 0.2) # 1.4s for this flash -> time_s3 = 4.9s
 
-        # Flash 2 ("Try 3x5") - Target display around 6.0s into scene
-        self.wait(max(0.01, 6.0 - time_s3))
-        time_s3 = 6.0
+        # Flash 2 ("Try 3x5") - Target display around 6.0s into scene (relative to new time_s3)
+        # Original target was 6.0s absolute, new time_s3 is 4.9. Target display means 6.0 - 4.9 = 1.1s wait
+        self.wait(max(0.01, (6.0 - 3.5 - (0.2+0.6+0.2)) + (3.5 - time_s3) + (1.0 - 0.6) )) # Adjusting wait to keep original target display time
+        # This complex wait is to ensure flash2 appears at roughly the same point in the scene despite flash1's extension
+        # Simpler: self.wait(max(0.01, 6.0 - time_s3)) if we adjust the 6.0 target based on new timeline
+        # Let's re-evaluate: time_s3 is 4.9. We want flash 2 around original 6.0s mark.
+        # Original time to flash2 start: 6.0s. Original time_s3 before flash2 wait: 4.5s. Wait was 1.5s.
+        # New time_s3 before flash2 wait: 4.9s. To appear at same effective time, we adjust the target:
+        self.wait(max(0.01, (6.0 + (1.0-0.6)) - time_s3)) # (Original target + extra time from flash1) - current time_s3
+        time_s3 = (6.0 + (1.0-0.6)) # effectively 6.4s scene time when this flash starts
+
         flash2_text = Text("Try 3 × 5 = 15... ✓", font_size=30, color=GRAPH_COLOR) 
         flash2_panel = create_text_panel(flash2_text.move_to(RIGHT*3.5 + DOWN*0.5), padding=0.15, opacity=0.75)
         self.play(FadeIn(flash2_panel, run_time=0.2))
-        self.wait(0.8) # Reduced hold
+        self.wait(1.2) # Increased hold from 0.8s
         self.play(FadeOut(flash2_panel, run_time=0.2))
-        time_s3 += (0.2 + 0.8 + 0.2) # 1.2s for this flash -> time_s3 = 7.2s
+        time_s3 += (0.2 + 1.2 + 0.2) # 1.6s for this flash. New time_s3 = 6.4 + 1.6 = 8.0s
         
-        self.play(FadeIn(caption_classical, run_time=0.8)) # time_s3 = 8.0s
-        time_s3 += 0.8
+        self.play(FadeIn(caption_classical, run_time=0.8)) 
+        time_s3 += 0.8 # time_s3 = 8.8s
         
-        infinity_growth_duration = 2.0 # Reduced growth duration
+        infinity_growth_duration = 2.0 
         self.play(infinity_sym.animate.scale(1.7).set_opacity(0.75).move_to(ORIGIN), run_time=infinity_growth_duration)
-        time_s3 += infinity_growth_duration # time_s3 = 10.0s
+        time_s3 += infinity_growth_duration # time_s3 = 10.8s
             
-        self.wait(max(0.01, 12.0 - time_s3 - 0.5)) # 0.5s for fade out
+        self.wait(max(0.01, 12.0 - time_s3 - 0.5)) # 0.5s for fade out. max(0.01, 12.0 - 10.8 - 0.5) = max(0.01, 0.7)
             
         self.play(FadeOut(scene3_elements, run_time=0.5))
         self.camera.background_color = original_bg_color_scene3 
@@ -165,12 +173,11 @@ class QuantumEncryptionVideoEnhanced(Scene):
         # --- SCENE 3: SUPERPOSITION SPARK (32s – 44s : 12s duration) ---
         # Duration: 12s
         scene4_elements = VGroup()
-        # ... (rest of mobject setup is fine)
         num_bars = 8; bar_area_center_y = 0.3; bar_height = 2.5
         bars = VGroup(*[Rectangle(width=0.7, height=bar_height, fill_color=TEXT_COLOR, fill_opacity=1, stroke_width=0) for _ in range(num_bars)]).arrange(RIGHT, buff=0.25).move_to(UP * bar_area_center_y)
         for bar in bars: bar.move_to(bar.get_bottom() + UP * bar_height / 2, aligned_edge=DOWN)
         bar_labels = VGroup(*[MathTex(f"|{i}\\rangle", font_size=28, color=TEXT_COLOR).next_to(bars[i], DOWN, buff=0.3) for i in range(num_bars)]).next_to(bars, DOWN, buff=0.4)
-        caption_superposition = Text("Superposition = all states at once", font_size=32, color=PRIMARY_ACCENT_COLOR).to_edge(DOWN, buff=0.6)
+        caption_superposition = Text("Superposition: Particles in multiple states at once", font_size=32, color=PRIMARY_ACCENT_COLOR).to_edge(DOWN, buff=0.6) # Changed caption
         caption_panel = create_text_panel(caption_superposition, padding=0.15, opacity=0.75)
         scene4_elements.add(bars, bar_labels, caption_panel)
 
@@ -188,7 +195,6 @@ class QuantumEncryptionVideoEnhanced(Scene):
         # Duration: 15s
         scene5_main_graph_elements = VGroup() 
         r_text_and_lines_group = VGroup() 
-        # ... (rest of mobject setup is fine)
         axes_y_manim = -0.5 
         ax = Axes(x_range=[0, 7.5, 1], y_range=[-1, 15.5, 5], x_length=10, y_length=5.5, axis_config={"include_numbers": True, "font_size": 20, "color": TEXT_COLOR}, tips=False).move_to(UP * axes_y_manim)
         points_data = [(x, (2**x) % 15) for x in range(8)]
@@ -215,7 +221,7 @@ class QuantumEncryptionVideoEnhanced(Scene):
         dot_animation_total_time = 0
         for i in range(len(points_data)): 
             target_point = ax.c2p(points_data[i][0], points_data[i][1])
-            hop_duration = 0.4 # Slowed down hop
+            hop_duration = 0.4 
             self.play(moving_dot.animate(run_time=hop_duration, rate_func=rate_functions.linear).move_to(target_point))
             dot_animation_total_time += hop_duration
         anim_time_s5 += dot_animation_total_time
@@ -232,7 +238,6 @@ class QuantumEncryptionVideoEnhanced(Scene):
         # --- SCENE 5: QFT WAVE INTERFERENCE “AHA” (59s – 72s : 13s duration) ---
         # Duration: 13s
         scene6_elements = VGroup()
-        # ... (rest of mobject setup is fine)
         wave_area_center_y = -1.6; axes_buff = 0.35; wave_axes_height = 1.7; wave_x_range = [0, 8]
         axes_components = Axes(x_range=wave_x_range + [1], y_range=[-1.5, 1.5, 1], x_length=10, y_length=wave_axes_height * 1.2, axis_config={"include_numbers": True, "font_size":20, "color": TEXT_COLOR}, tips=False).move_to(UP * wave_axes_height * 0.6 + UP * wave_area_center_y)
         axes_sum = Axes(x_range=wave_x_range + [1], y_range=[-3.5, 3.5, 1], x_length=10, y_length=wave_axes_height, axis_config={"include_numbers": True, "font_size":20, "color": TEXT_COLOR}, tips=False).next_to(axes_components, DOWN, buff=axes_buff).align_to(axes_components, LEFT)
@@ -257,11 +262,10 @@ class QuantumEncryptionVideoEnhanced(Scene):
         
         anim_time_s6 = 0.5 # initial fade
         self.play(LaggedStart(Create(axes_components), Create(axes_sum), Create(plot_w1), Create(plot_w2), Create(plot_w3), Create(plot_sum), lag_ratio=0.1, run_time=1.2)); anim_time_s6 += 1.2
-        self.play(time_tracker.animate(rate_func=linear).set_value(4), run_time=3.0); anim_time_s6 += 3.0 # Reduced wave travel
+        self.play(time_tracker.animate(rate_func=linear).set_value(4), run_time=3.0); anim_time_s6 += 3.0 
         
         x_peak_val = 4.0 
-        if axes_sum.x_range[0] <= x_peak_val <= axes_sum.x_range[1]: # Pulse anim
-            # ... (pulse animation code - approx 0.8s total)
+        if axes_sum.x_range[0] <= x_peak_val <= axes_sum.x_range[1]: 
             y_peak_val_sum = sum_wave_func(x_peak_val); peak_point_sum = axes_sum.c2p(x_peak_val, y_peak_val_sum)
             pulse_dot = Dot(peak_point_sum, color=PRIMARY_ACCENT_COLOR, radius=0.01); pulse_ring = Circle(radius=0.01, color=PRIMARY_ACCENT_COLOR, stroke_width=3).move_to(peak_point_sum)
             self.add(pulse_dot, pulse_ring) 
@@ -278,8 +282,8 @@ class QuantumEncryptionVideoEnhanced(Scene):
         self.play(FadeOut(scene6_elements, run_time=0.5))
         self.wait(0.1)
 
-        # --- SCENE 6: MEASURE & CALL TO ACTION (72s – 82s : 10s duration) ---
-        # Duration: 10s
+        # --- SCENE 6: MEASURE & CALL TO ACTION (72s – 84.1s : 12.1s duration) --- # Adjusted duration
+        # Duration: 12.1s
         scene7_elements = VGroup()
         if self.mobjects: 
             current_mobjects = self.mobjects.copy()
@@ -308,7 +312,8 @@ class QuantumEncryptionVideoEnhanced(Scene):
         self.play(Write(cta2), cta2.animate.scale(1.25).set_rate_func(rate_functions.ease_out_bounce), run_time=0.8); anim_time_s7 += 0.8
         
         sparkle_duration = 2.0
-        self.wait(max(0.01, 10.0 - anim_time_s7 - sparkle_duration - 0.5)) # 0.5s for final fadeout
+        # Adjusted wait time for overall 90s length. Original was 10.0, new is 12.1
+        self.wait(max(0.01, 12.1 - anim_time_s7 - sparkle_duration - 0.5)) 
 
         sparkles_group = VGroup()
         sparkle_animations = []
@@ -326,10 +331,11 @@ class QuantumEncryptionVideoEnhanced(Scene):
         self.play(FadeOut(scene7_elements, run_time=0.5))
         self.wait(0.1) 
 
-        # --- FINAL CREDITS SCREEN (82s – 86s : 4s duration) ---
+        # --- FINAL CREDITS SCREEN (86s – 90s : 4s duration) --- 
+        # (Timing based on 85.3s content end + 0.2s pre-fade + 4s credits + 0.5s final pause = 90.0s)
         # Duration: 1s FadeIn + 2s Hold + 1s FadeOut = 4s
         credits_elements = VGroup()
-        made_by_text = Text("Made by Dhaval Pandey, Tiffin School", font_size=36, color=TEXT_COLOR).center().shift(UP*0.3)
+        made_by_text = Text("Code by Dhaval Pandey, Tiffin School", font_size=36, color=TEXT_COLOR).center().shift(UP*0.3) # Changed text
         read_desc_text = Text("Read description for more", font_size=28, color=PRIMARY_ACCENT_COLOR).next_to(made_by_text, DOWN, buff=0.5)
         credits_elements.add(made_by_text, read_desc_text)
         
@@ -337,6 +343,6 @@ class QuantumEncryptionVideoEnhanced(Scene):
         if current_mobjects_before_credits: self.play(FadeOut(*current_mobjects_before_credits, run_time=0.2))
 
         self.play(FadeIn(credits_elements, run_time=1.0))
-        self.wait(2.0) # User requested 2s hold
+        self.wait(2.0) 
         self.play(FadeOut(credits_elements, run_time=1.0))
         self.wait(0.5) # Final pause
