@@ -4,8 +4,8 @@ This project is a submission for the **HQI Shorts Competition**, visually explai
 
 ## Project Structure
 
--   **`drafts/`**: Contains draft versions of the animation scripts.
-    -   `draft1.py`, `draft2.py`, `draft3.py`: Iterative drafts of the animation code.
+-   **`drafts/`**: Contains draft versions of the animation scripts that I didn't decide to use.
+    -   `draft1.py`, `draft2.py`, `draft3.py`, `draft4.py`: Iterative drafts of the animation code.
 -   **`media/videos/`**: Contains the final rendered video submission.
 
     -   `video/`: Directory for the final video and related assets.
@@ -30,6 +30,7 @@ The video uses engaging visuals, including:
 
 1. Install **Manim**: Follow the [Manim installation guide](https://docs.manim.community/en/stable/installation.html).
 2. Run the final script:
+
     ```manim -pqh --format=mp4 --fps 60 -r 1920,1080 video.py QuantumEncryptionVideoEnhanced
 
     ```
