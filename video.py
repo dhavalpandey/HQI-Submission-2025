@@ -423,7 +423,7 @@ class OutroScene(QuantumBaseScene):
 
         cta1 = Text("Shor's algorithm uses embedded patterns,", font_size=36, color=TEXT_COLOR, t2w={'hidden patterns': BOLD}).move_to(UP*0.8)
         cta2 = Text("hidden deep within waves.", font_size=36, color=TEXT_COLOR, t2w={'great challenges': BOLD}).next_to(cta1, DOWN, buff=0.3)
-        cta3 = Text("And this can all be unlocked using quantum.", font_size=48, color=PRIMARY_ACCENT_COLOR, weight=BOLD).next_to(cta2, DOWN, buff=0.8)
+        cta3 = Text("All unlocked by Quantum.", font_size=48, color=PRIMARY_ACCENT_COLOR, weight=BOLD).next_to(cta2, DOWN, buff=0.8)
         cta_elements.add(cta1, cta2, cta3)
 
         self.play(Write(cta1, rate_func=slow_into), run_time=1.0); anim_time_cta += 1.0
